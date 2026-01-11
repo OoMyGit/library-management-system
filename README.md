@@ -304,7 +304,7 @@ Configured with Vite plugin. No config file needed.
 
 ---
 
-## 👨‍💻 Author
+# 👨‍💻 Author
 
-**[Kwandy Chandra]**  
+## **[Kwandy Chandra]**  
 LSP Certification - PEMROGRAM (PROGRAMMER)
