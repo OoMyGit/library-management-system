@@ -5,6 +5,8 @@
 
 Web-based Library Management System to manage book loans, catalog and members.
 
+Author : Kwandy Chandra
+
 ---
 
 ## 📸 Screenshots
@@ -364,7 +366,7 @@ Configured with Vite plugin. No config file needed.
 
 ---
 
-## 👨‍💻 Author
+# 👨‍💻 Author
 
-**Kwandy Chandra**  
+## **Kwandy Chandra**  
 LSP Certification - PEMROGRAM (PROGRAMMER)
