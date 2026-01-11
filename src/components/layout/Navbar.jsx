@@ -2,10 +2,9 @@ import { Link, useLocation } from 'react-router-dom'
 import { APP_NAME, ROUTES } from '../../constants/constants-index'
 
 /**
- * Navbar Component
- * Main navigation bar for the application
+ * Navbar Component with Member/Staff Mode Toggle
  */
-export default function Navbar() {
+export default function Navbar({ userMode, onToggleMode }) {
   const location = useLocation()
   
   const isActive = (path) => {
@@ -33,20 +32,68 @@ export default function Navbar() {
             <span className="text-xl font-bold text-gray-900">{APP_NAME}</span>
           </Link>
 
-          {/* Navigation Links */}
+          {/* Navigation Links + Toggle */}
           <div className="hidden md:flex items-center space-x-2">
+            {/* Always visible */}
             <Link to={ROUTES.HOME} className={navLinkClass(ROUTES.HOME)}>
               Home
             </Link>
             <Link to={ROUTES.CATALOG} className={navLinkClass(ROUTES.CATALOG)}>
               Book Catalog
             </Link>
-            <Link to={ROUTES.STAFF_LOANS} className={navLinkClass(ROUTES.STAFF_LOANS)}>
-              Staff: Loans
-            </Link>
-            <Link to={ROUTES.STAFF_MEMBERS} className={navLinkClass(ROUTES.STAFF_MEMBERS)}>
-              Staff: Members
-            </Link>
+
+            {/* Only visible in Staff Mode */}
+            {userMode === 'staff' && (
+              <>
+                <Link to={ROUTES.STAFF_LOANS} className={navLinkClass(ROUTES.STAFF_LOANS)}>
+                  Loans
+                </Link>
+                <Link to={ROUTES.STAFF_MEMBERS} className={navLinkClass(ROUTES.STAFF_MEMBERS)}>
+                  Members
+                </Link>
+              </>
+            )}
+
+            {/* Divider */}
+            <div className="h-8 w-px bg-gray-300 mx-2"></div>
+
+            {/* Mode Toggle Button */}
+            <button
+              onClick={onToggleMode}
+              className={`
+                flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-all
+                ${userMode === 'member' 
+                  ? 'bg-green-100 text-green-700 hover:bg-green-200' 
+                  : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                }
+              `}
+              title={`Switch to ${userMode === 'member' ? 'Staff' : 'Member'} Mode`}
+            >
+              {/* Icon */}
+              <span className="text-xl">
+                {userMode === 'member' ? '👤' : '💼'}
+              </span>
+              
+              {/* Mode Label */}
+              <span className="font-semibold">
+                {userMode === 'member' ? 'Member' : 'Staff'} Mode
+              </span>
+
+              {/* Switch Icon */}
+              <svg 
+                className="w-4 h-4" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" 
+                />
+              </svg>
+            </button>
           </div>
 
           {/* Mobile Menu Button */}

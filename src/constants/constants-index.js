@@ -1,6 +1,6 @@
 // App Constants
-export const APP_NAME = "LibraryHub"
-export const APP_DESCRIPTION = "Modern Library Management System"
+export const APP_NAME = "Library Management System"
+export const APP_DESCRIPTION = ""
 
 // Routes
 export const ROUTES = {
