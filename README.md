@@ -9,13 +9,17 @@ Web-based Library Management System to manage book loans, catalog and members.
 
 ## 📸 Screenshots
 
-**[INSERT: Screenshot Home Page dengan stats cards]**
+### 🏠 Home Dashboard
+![Home Page](docs/assets/Home.png)
 
-**[INSERT: Screenshot Book Catalog dengan search & filter]**
+### 📚 Book Catalog
+![Book Catalog](docs/assets/Catalog.png)
 
-**[INSERT: Screenshot Staff Loans Management]**
+### 📄 Loans Management
+![Loans Management](docs/assets/Loans.png)
 
-**[INSERT: Screenshot Staff Members Management]**
+### 👥 Members Management
+![Members Management](docs/assets/Members.png)
 
 ---
 
@@ -167,69 +171,125 @@ src/
 - loans.member_id → members.id (Many-to-One)
 - loans.book_id → books.id (Many-to-One)
 
-**[INSERT: ERD Diagram showing relationships]**
+#### ERD Diagram
+![ERD Diagram](docs/assets/ERDdiagram.png)
 
 ---
 
 ## 💻 OOP Implementation
 
-### Encapsulation (Service Layer)
+### 1. Inheritance
 
 ```javascript
-// services/BookService.js
-class BookService {
-  constructor() {
-    this.tableName = 'books' // Private data
+// services/BaseService.js - Parent Class
+class BaseService {
+  constructor(tableName) {
+    this.tableName = tableName
   }
 
-  async getAllBooks() {
-    // Public interface
+  async getAll() {
     const { data } = await supabase.from(this.tableName).select('*')
+    return data || []
+  }
+
+  async getById(id) {
+    const { data } = await supabase
+      .from(this.tableName)
+      .select('*')
+      .eq('id', id)
+      .single()
     return data
   }
 }
-```
 
-**Benefits:** Data hiding, clean API, maintainability
-
-### Abstraction (Custom Hooks)
-
-```javascript
-// hooks/useBooks.js
-function useBooks() {
-  const [books, setBooks] = useState([])
-  const [loading, setLoading] = useState(false)
-  
-  const fetchBooks = async () => {
-    // Complex logic hidden
+// services/BookService.js - Child Class
+class BookService extends BaseService {
+  constructor() {
+    super('books') // Call constructor parent
   }
   
-  return { books, loading, fetchBooks } // Simple interface
+  // ✓  getAll() from parent
+  // ✓  getById() from parent
+  
+  async searchBooks(term) {
+    // Method khusus BookService
+    const { data } = await supabase
+      .from(this.tableName)
+      .select('*')
+      .ilike('title', `%${term}%`)
+    return data
+  }
 }
+
+// Usage
+const bookService = new BookService()
+await bookService.getAll()         // Method from parent!
+await bookService.searchBooks('Harry') // Method from child!
 ```
 
-**Benefits:** Complexity hidden, reusability, testability
+**Benefit:** Code reuse, tidak perlu tulis `getAll()` di setiap service
 
-### Polymorphism (Component Variants)
+**Child classes yang mewarisi BaseService:**
+- `BookService` - untuk books table
+- `MemberService` - untuk members table
+
+---
+
+### 2. Polymorphism
 
 ```javascript
 // components/common/Button.jsx
-function Button({ variant = 'primary' }) {
+function Button({ variant = 'primary', children, onClick }) {
   const styles = {
     primary: 'bg-blue-600 text-white',
     danger: 'bg-red-600 text-white',
     outline: 'border-2 border-blue-600'
   }
   
-  return <button className={styles[variant]}>...</button>
+  return (
+    <button className={styles[variant]} onClick={onClick}>
+      {children}
+    </button>
+  )
 }
 
-// Usage - same component, different forms
+// Usage - One component, many variant
 <Button variant="primary">Save</Button>
 <Button variant="danger">Delete</Button>
+<Button variant="outline">Cancel</Button>
 ```
 
-**Benefits:** One interface, many forms, code reusability
+**Benefit:** One interface, many forms
+
+---
+
+### 3. Overloading (Optional Parameters)
+
+```javascript
+// services/LoanService.js
+class LoanService {
+  // Can be called with 2, 3, or 4 parameter
+  async createLoan(memberId, bookId, notes = '', options = {}) {
+    const { sendEmail = false } = options
+    
+    const loan = await supabase.from('loans').insert({
+      member_id: memberId,
+      book_id: bookId,
+      notes: notes  // Optional parameter
+    })
+    
+    if (sendEmail) await this.sendNotification(loan)
+    return loan
+  }
+}
+
+// Usage - Different way to call!
+await loanService.createLoan(m1, b1)                    // 2 params
+await loanService.createLoan(m1, b1, 'Urgent')          // 3 params  
+await loanService.createLoan(m1, b1, '', { sendEmail: true })  // 4 params
+```
+
+**Benefit:** Flexible API, satu method banyak cara pakai
 
 ---
 
@@ -306,5 +366,5 @@ Configured with Vite plugin. No config file needed.
 
 ## 👨‍💻 Author
 
-**[Kwandy Chandra]**  
+**Kwandy Chandra**  
 LSP Certification - PEMROGRAM (PROGRAMMER)

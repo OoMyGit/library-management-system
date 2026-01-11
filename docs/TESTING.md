@@ -66,7 +66,8 @@ Manual testing report untuk Library Management System.
 - All elements render correctly
 
 **Result:** ✅ PASS  
-**Notes:** Page loads in 1.2s, all stats accurate
+**🏠 Home Dashboard**
+![Home Page](../docs/assets/Home.png)
 
 ---
 
@@ -91,7 +92,8 @@ Manual testing report untuk Library Management System.
 - After second click: Returns to Member
 
 **Result:** ✅ PASS  
-**Notes:** Toggle works instantly, state persists after refresh
+![Member Mode](../docs/assets/2-1.png)
+![Staff Mode](../docs/assets/2-2.png)
 
 ---
 
@@ -102,13 +104,13 @@ Manual testing report untuk Library Management System.
 
 **Preconditions:**
 - Staff Mode enabled
-- Member exists (M-2026-001)
+- Member exists (M-2026-002)
 - Book available (Clean Code)
 
 **Steps:**
 1. Navigate to Staff Loans
 2. Fill form:
-   - Member: M-2026-001 (John Doe)
+   - Member: M-2026-002 (John Doe)
    - Book: Clean Code
    - Notes: "Test loan"
 3. Click "Borrow Book"
@@ -122,7 +124,8 @@ Manual testing report untuk Library Management System.
 - Book availability decreases
 
 **Result:** ✅ PASS  
-**Notes:** Loan created in 0.8s, all data correct
+![Before](../docs/assets/3-1.png)
+![After](../docs/assets/3-2.png)
 
 ---
 
@@ -149,7 +152,7 @@ Manual testing report untuk Library Management System.
 - Book availability increases
 
 **Result:** ✅ PASS  
-**Notes:** Return processed successfully
+![Returned](../docs/assets/4-1.png)
 
 ---
 
@@ -174,7 +177,7 @@ Manual testing report untuk Library Management System.
 - Overdue tab shows loans
 
 **Result:** ✅ PASS  
-**Notes:** System correctly identified 3 overdue loans
+![Overdue Loans](../docs/assets/5-1.png)
 
 ---
 
@@ -202,7 +205,8 @@ Manual testing report untuk Library Management System.
 - Stats update
 
 **Result:** ✅ PASS  
-**Notes:** Member code M-2026-009 generated correctly
+![Fill form](../docs/assets/6-1.png)
+![Member registered](../docs/assets/6-2.png)
 
 ---
 
@@ -227,29 +231,8 @@ Manual testing report untuk Library Management System.
 - Consistent across all loans
 
 **Result:** ✅ PASS  
-**Notes:** Business rule verified ✅
-
----
-
-## 🐛 Bugs Found & Fixed
-
-### Bug #1: Stats Not Updating
-**Severity:** Medium  
-**Status:** ✅ FIXED
-
-**Description:** Stats cards not updating after creating loan
-
-**Fix:** Added proper state refresh in useEffect
-
----
-
-### Bug #2: Button Invisible
-**Severity:** High  
-**Status:** ✅ FIXED
-
-**Description:** "Browse Books" button had white text on white background
-
-**Fix:** Added inline style to force colors
+![Estimated Date (Input)](../docs/assets/7-1.png)
+![Loan & Due Date](../docs/assets/7-2.png)
 
 ---
 
@@ -265,7 +248,7 @@ Manual testing report untuk Library Management System.
 ✅ Business Logic          100% (1/1)
 ```
 
-**LSP Requirements:**
+**Requirements:**
 ```
 ✅ Catalog for members     PASS (TC-04)
 ✅ Create loan (staff)     PASS (TC-05, TC-06)

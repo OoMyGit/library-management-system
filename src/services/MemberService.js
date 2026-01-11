@@ -1,52 +1,59 @@
 import supabase from '../supabase-client'
+import BaseService from './BaseService'
 import { MEMBER_STATUS } from '../constants/constants-index'
 
 /**
- * MemberService Class - Handles all member-related operations
- * OOP Pattern: Encapsulates member business logic
+ * MemberService - Child Class
+ * OOP: Inheritance - Extends BaseService
+ * 
+ * parent (BaseService):
+ * ✓ getAll()
+ * ✓ getById()
+ * ✓ count()
+ * 
+ * Method MemberService:
+ * - generateMemberCode()
+ * - getActiveMembers()
+ * - addMember()
+ * - searchMembers()
  */
-class MemberService {
+
+class MemberService extends BaseService {
   constructor() {
-    this.tableName = 'members'
+    super('members') // Panggil constructor parent
   }
 
+  // ✓ getAll() & getById() sudah dari BaseService
+
   /**
-   * Generate unique member code (format: M-YYYY-XXX)
-   * @returns {Promise<string>} Generated member code
+   * Generate member code - Menggunakan getAll() dari parent!
    */
   async generateMemberCode() {
     try {
       const year = new Date().getFullYear()
       
-      // Get latest member code for current year
-      const { data, error } = await supabase
-        .from(this.tableName)
-        .select('member_code')
-        .like('member_code', `M-${year}-%`)
-        .order('member_code', { ascending: false })
-        .limit(1)
-
-      if (error) throw error
+      // Pakai getAll() dari parent class!
+      const allMembers = await this.getAll()
+      
+      const codesThisYear = allMembers
+        .filter(m => m.member_code.startsWith(`M-${year}-`))
+        .map(m => m.member_code)
+        .sort()
+        .reverse()
 
       let nextNumber = 1
-      if (data && data.length > 0) {
-        const lastCode = data[0].member_code
-        const lastNumber = parseInt(lastCode.split('-')[2])
-        nextNumber = lastNumber + 1
+      if (codesThisYear.length > 0) {
+        const lastCode = codesThisYear[0]
+        nextNumber = parseInt(lastCode.split('-')[2]) + 1
       }
 
-      const paddedNumber = String(nextNumber).padStart(3, '0')
-      return `M-${year}-${paddedNumber}`
+      return `M-${year}-${String(nextNumber).padStart(3, '0')}`
     } catch (error) {
       console.error('Error generating member code:', error)
       throw error
     }
   }
 
-  /**
-   * Get all members
-   * @returns {Promise<Array>} Array of member objects
-   */
   async getAllMembers() {
     try {
       const { data, error } = await supabase
@@ -62,10 +69,6 @@ class MemberService {
     }
   }
 
-  /**
-   * Get active members only
-   * @returns {Promise<Array>} Array of active member objects
-   */
   async getActiveMembers() {
     try {
       const { data, error } = await supabase
@@ -82,11 +85,6 @@ class MemberService {
     }
   }
 
-  /**
-   * Get member by ID with loan history
-   * @param {string} memberId - Member UUID
-   * @returns {Promise<Object>} Member object with loans
-   */
   async getMemberById(memberId) {
     try {
       const { data, error } = await supabase
@@ -113,11 +111,6 @@ class MemberService {
     }
   }
 
-  /**
-   * Search members by name or email
-   * @param {string} searchTerm - Search query
-   * @returns {Promise<Array>} Array of matching members
-   */
   async searchMembers(searchTerm) {
     try {
       const { data, error } = await supabase
@@ -134,14 +127,8 @@ class MemberService {
     }
   }
 
-  /**
-   * Add new member
-   * @param {Object} memberData - Member information
-   * @returns {Promise<Object>} Created member object
-   */
   async addMember(memberData) {
     try {
-      // Generate member code
       const memberCode = await this.generateMemberCode()
 
       const { data, error } = await supabase
@@ -164,12 +151,6 @@ class MemberService {
     }
   }
 
-  /**
-   * Update member information
-   * @param {string} memberId - Member UUID
-   * @param {Object} memberData - Updated member information
-   * @returns {Promise<Object>} Updated member object
-   */
   async updateMember(memberId, memberData) {
     try {
       const { data, error } = await supabase
@@ -187,11 +168,6 @@ class MemberService {
     }
   }
 
-  /**
-   * Deactivate member (soft delete)
-   * @param {string} memberId - Member UUID
-   * @returns {Promise<boolean>} Success status
-   */
   async deactivateMember(memberId) {
     try {
       const { error } = await supabase
@@ -207,11 +183,6 @@ class MemberService {
     }
   }
 
-  /**
-   * Activate member
-   * @param {string} memberId - Member UUID
-   * @returns {Promise<boolean>} Success status
-   */
   async activateMember(memberId) {
     try {
       const { error } = await supabase
@@ -227,11 +198,6 @@ class MemberService {
     }
   }
 
-  /**
-   * Check if email already exists
-   * @param {string} email - Email to check
-   * @returns {Promise<boolean>} True if email exists
-   */
   async emailExists(email) {
     try {
       const { data, error } = await supabase
@@ -249,5 +215,4 @@ class MemberService {
   }
 }
 
-// Export singleton instance
 export default new MemberService()

@@ -1,17 +1,30 @@
 import supabase from '../supabase-client'
+import BaseService from './BaseService'
 
 /**
- * BookService Class - Handles all book-related operations
- * OOP Pattern: Encapsulates book business logic
+ * BookService - Child Class
+ * OOP: Inheritance - Extends BaseService
+ * 
+ * parent (BaseService):
+ * ✓ getAll()
+ * ✓ getById() 
+ * ✓ count()
+ * 
+ * Method BookService:
+ * - getAllBooks() -  custom sorting
+ * - searchBooks()
+ * - getBooksByCategory()
+ * - isBookAvailable()
  */
-class BookService {
+class BookService extends BaseService {
   constructor() {
-    this.tableName = 'books'
+    super('books') // Panggil constructor parent
   }
 
+  // ✓ getAll() & getById() sudah dari BaseService!
+
   /**
-   * Get all books from database
-   * @returns {Promise<Array>} Array of book objects
+   * Get all books dengan custom sorting
    */
   async getAllBooks() {
     try {
@@ -28,11 +41,6 @@ class BookService {
     }
   }
 
-  /**
-   * Get books by availability status
-   * @param {boolean} availableOnly - Filter only available books
-   * @returns {Promise<Array>} Array of book objects
-   */
   async getBooks(availableOnly = false) {
     try {
       let query = supabase
@@ -45,7 +53,6 @@ class BookService {
       }
 
       const { data, error } = await query
-
       if (error) throw error
       return data || []
     } catch (error) {
@@ -54,11 +61,6 @@ class BookService {
     }
   }
 
-  /**
-   * Search books by title or author
-   * @param {string} searchTerm - Search query
-   * @returns {Promise<Array>} Array of matching books
-   */
   async searchBooks(searchTerm) {
     try {
       const { data, error } = await supabase
@@ -75,11 +77,6 @@ class BookService {
     }
   }
 
-  /**
-   * Filter books by category
-   * @param {string} category - Book category
-   * @returns {Promise<Array>} Array of filtered books
-   */
   async getBooksByCategory(category) {
     try {
       if (!category || category === 'All Categories') {
@@ -95,37 +92,18 @@ class BookService {
       if (error) throw error
       return data || []
     } catch (error) {
-      console.error('Error filtering books by category:', error)
+      console.error('Error filtering books:', error)
       throw error
     }
   }
 
   /**
-   * Get a single book by ID
-   * @param {string} bookId - Book UUID
-   * @returns {Promise<Object>} Book object
+   * Memanggil getById() dari parent class
    */
   async getBookById(bookId) {
-    try {
-      const { data, error } = await supabase
-        .from(this.tableName)
-        .select('*')
-        .eq('id', bookId)
-        .single()
-
-      if (error) throw error
-      return data
-    } catch (error) {
-      console.error('Error fetching book by ID:', error)
-      throw error
-    }
+    return await this.getById(bookId)
   }
 
-  /**
-   * Update book availability when borrowed
-   * @param {string} bookId - Book UUID
-   * @returns {Promise<boolean>} Success status
-   */
   async decreaseAvailability(bookId) {
     try {
       const book = await this.getBookById(bookId)
@@ -145,16 +123,11 @@ class BookService {
       if (error) throw error
       return true
     } catch (error) {
-      console.error('Error decreasing book availability:', error)
+      console.error('Error decreasing availability:', error)
       throw error
     }
   }
 
-  /**
-   * Update book availability when returned
-   * @param {string} bookId - Book UUID
-   * @returns {Promise<boolean>} Success status
-   */
   async increaseAvailability(bookId) {
     try {
       const book = await this.getBookById(bookId)
@@ -170,26 +143,20 @@ class BookService {
       if (error) throw error
       return true
     } catch (error) {
-      console.error('Error increasing book availability:', error)
+      console.error('Error increasing availability:', error)
       throw error
     }
   }
 
-  /**
-   * Check if book is available for borrowing
-   * @param {string} bookId - Book UUID
-   * @returns {Promise<boolean>} Availability status
-   */
   async isBookAvailable(bookId) {
     try {
       const book = await this.getBookById(bookId)
       return book.available_quantity > 0
     } catch (error) {
-      console.error('Error checking book availability:', error)
+      console.error('Error checking availability:', error)
       return false
     }
   }
 }
 
-// Export singleton instance
 export default new BookService()
